@@ -9,6 +9,7 @@
 /notice/:id/delete ---> delete notice
 
 가짜db 배열로 통해서 만들어봐
+
 db
 
 user
@@ -19,5 +20,4 @@ meta
 rating
 views
 
-// 1.게시판 구현
-// 2.알고리즘 복습
+
