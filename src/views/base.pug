@@ -1,0 +1,17 @@
+doctype html
+html
+    head
+        title #{pageTitle} | notice
+        link(rel="stylesheet" href="https://unpkg.com/mvp.css")
+    body
+        main
+            nav
+                ul
+                    li
+                        a(href="/") home
+                    li
+                        a(href="/search") search
+                    li
+                        a(href="/notice/upload") Upload Notice
+            block content
+            include includes/footer

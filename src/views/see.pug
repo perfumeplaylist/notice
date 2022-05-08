@@ -1,0 +1,14 @@
+extends base
+
+block content
+    h1=notice.title
+    p=notice.description
+    small=notice.user
+    br
+    small rating : #{notice.meta.rating}
+    br
+    small view : #{notice.meta.view}
+    hr
+    a(href=`${notice.id}/edit`) Edit notice &rarr;
+    br
+    a(href=`${notice.id}/delete`) Delte notice &rarr;
