@@ -18,6 +18,3 @@ createAt
 meta
 rating
 views
-
-// 1.게시판 구현
-// 2.알고리즘 복습

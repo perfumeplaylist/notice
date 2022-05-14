@@ -1,77 +1,16 @@
-let notices = [
-  {
-    id: 1,
-    title: "See",
-    description: "aksjdbfkajsdnfkjasdnf",
-    createAt: new Date(),
-    user: "Kim",
-    meta: {
-      rating: 0,
-      view: 0,
-    },
-  },
-  {
-    id: 2,
-    title: "Check",
-    description: "zxcvzxcvasdfigb",
-    createAt: new Date(),
-    user: "Que",
-    meta: {
-      rating: 0,
-      view: 0,
-    },
-  },
-  {
-    id: 3,
-    title: "help",
-    description: "qowirjfijsabdfjhas",
-    createAt: new Date(),
-    user: "Stack",
-    meta: {
-      rating: 0,
-      view: 0,
-    },
-  },
-  {
-    id: 4,
-    title: "See",
-    description: "qweoirtjnfsfkjnvoksa",
-    createAt: new Date(),
-    user: "Jung",
-    meta: {
-      rating: 0,
-      view: 1,
-    },
-  },
-];
+import Notice from "../models/notice";
 
 // globalRouter
-export const home = (req, res) => {
-  // 조회수 순으로 정렬
-  notices.sort((a, b) => {
-    if (a.meta.view > b.meta.view) {
-      return -1;
-    }
-
-    if (a.meta.view < b.meta.view) {
-      return 1;
-    }
-    return 0;
-  });
-
-  return res.render("home", { pageTitle: "Home", notices });
+export const home = async (req, res) => {
+  const notice = await Notice.find().sort({ "meta.views": "desc" });
+  return res.render("home", { pageTitle: "Home", notice });
 };
 
 export const search = (req, res) => {
   const {
     query: { title },
   } = req;
-  //   const notice = notices.find((el) => el.title === title);
-  const notice = notices.filter((el) => el.title === title);
-  if (notice === undefined) {
-    return res.render("search", { pageTitle: "Search Title" });
-  }
-  return res.render("search", { pageTitle: "Search Title", notice });
+  return res.render("search", { pageTitle: "Search Title" });
 };
 
 // noticeRouter
@@ -79,70 +18,56 @@ export const getUpload = (req, res) => {
   return res.render("upload", { pageTitle: `Upload Noitce` });
 };
 
-export const postUpload = (req, res) => {
-  const {
-    body: { title, content },
-  } = req;
-  if (title && content) {
-    const notice = {
-      id: notices.length + 1,
-      title,
-      description: content,
-      createAt: new Date(),
+export const postUpload = async (req, res) => {
+  const title = req.body.title;
+  const content = req.body.content;
+  await Notice.create({
+    title,
+    description: content,
+  });
+  return res.redirect("/");
+};
+
+export const see = async (req, res) => {
+  const id = req.params.id;
+  try {
+    const notice = await Notice.findById(id);
+    await Notice.findByIdAndUpdate(id, {
       meta: {
-        rating: 0,
-        view: 0,
+        views: notice.meta.views + 1,
       },
-    };
-    notices.push(notice);
-    return res.redirect("/");
+    });
+    return res.render("see", { pageTitle: `${notice.title}`, notice });
+  } catch (error) {
+    console.log(error);
   }
 };
 
-export const see = (req, res) => {
-  const {
-    params: { id },
-  } = req;
-  const notice = notices.find((el) => el.id === Number(id));
-  notice.meta.view += 1;
-  if (notice) {
-    return res.render("see", { pageTitle: `See ${notice.title}`, notice });
+export const getEdit = async (req, res) => {
+  const id = req.params.id;
+  const notice = await Notice.findById(id);
+  return res.render("edit", { pageTitle: `Edit : ${notice.title}`, notice });
+};
+
+export const postEdit = async (req, res) => {
+  const id = req.params.id;
+  const title = req.body.title;
+  const description = req.body.content;
+  const exists = await Notice.exists({ _id: id });
+  if (!exists) {
+    return res.redirect("/");
   }
+  await Notice.findByIdAndUpdate(id, {
+    title,
+    description,
+  });
   return res.redirect("/");
 };
 
-export const getEdit = (req, res) => {
-  const {
-    params: { id },
-  } = req;
-  const notice = notices.find((el) => el.id === Number(id));
-  if (notice) {
-    return res.render("edit", { pageTitle: `Edit ${notice.title}`, notice });
-  }
+export const deleteNotice = async (req, res) => {
+  const id = req.params.id;
+  await Notice.findByIdAndDelete(id);
   return res.redirect("/");
 };
 
-export const postEdit = (req, res) => {
-  const {
-    body: { title, content },
-    params: { id },
-  } = req;
-  if (title && content) {
-    const notice = notices.find((el) => el.id === Number(id));
-    notice.title = title;
-    notice.description = content;
-    return res.redirect("/");
-  }
-};
-
-export const deleteNotice = (req, res) => {
-  const {
-    params: { id },
-  } = req;
-  if (id) {
-    const index = notices.findIndex((el) => el.id === Number(id));
-    notices.splice(index, 1);
-    return res.redirect("/");
-  }
-};
 // 오류처리

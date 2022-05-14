@@ -2,5 +2,6 @@ extends base.pug
 include mixins/notice.pug
 
 block content
-    each notice in notices
-        +notice(notice)
+    if notice
+        each item in notice
+            +notice(item)

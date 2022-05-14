@@ -1,3 +1,6 @@
+import "./db";
+import "./models/notice";
+import "./models/User";
 import express from "express";
 import morgan from "morgan";
 import globalRouter from "./Router/globalRouter";

@@ -1,13 +1,12 @@
 mixin notice(item)
+    a(href=`/notice/${item.id}`)=item.title
     ul
         li
-            a(href=`/notice/${item.id}`)=item.title
+            span=item.description
         li
             small=item.createAt
         li
-            span=item.user
-        li
             span #{item.meta.rating} / 5
         li
-            span #{item.meta.view >0 ? `${item.meta.view} views`: `${item.meta.view} view`}
+            span #{item.meta.view >0 ? `${item.meta.views} views`: `${item.meta.views} view`}
         hr
