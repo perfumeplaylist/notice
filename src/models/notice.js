@@ -4,6 +4,7 @@ const noticeSchema = new mongoose.Schema({
   title: { type: String, required: true, trim: true, maxlength: 20 },
   description: { type: String, required: true, trim: true },
   createAt: { type: String, default: Date.now, trim: true },
+  image: { type: String },
   meta: {
     rating: { type: Number, default: 0 },
     views: { type: Number, default: 0 },

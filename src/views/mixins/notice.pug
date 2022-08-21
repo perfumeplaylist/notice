@@ -5,8 +5,8 @@ mixin notice(item)
             span=item.description
         li
             small=item.createAt
-        li
-            span #{item.meta.rating} / 5
-        li
-            span #{item.meta.view >0 ? `${item.meta.views} views`: `${item.meta.views} view`}
+        //- li
+        //-     span #{item.meta.rating} / 5
+        //- li
+        //-     span #{item.meta.view >0 ? `${item.meta.views} views`: `${item.meta.views} view`}
         hr

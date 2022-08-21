@@ -6,11 +6,16 @@ export const home = async (req, res) => {
   return res.render("home", { pageTitle: "Home", notice });
 };
 
-export const search = (req, res) => {
+export const getSearch = async (req, res) => {
   const {
     query: { title },
   } = req;
-  return res.render("search", { pageTitle: "Search Title" });
+  const notice = await Notice.find({
+    title: {
+      $regex: new RegExp(`^${title}`, "i"),
+    },
+  });
+  return res.render("search", { pageTitle: "Search Title", notice });
 };
 
 // noticeRouter
@@ -21,8 +26,10 @@ export const getUpload = (req, res) => {
 export const postUpload = async (req, res) => {
   const title = req.body.title;
   const content = req.body.content;
+  const { file } = req;
   await Notice.create({
     title,
+    image: file.path,
     description: content,
   });
   return res.redirect("/");
@@ -70,4 +77,33 @@ export const deleteNotice = async (req, res) => {
   return res.redirect("/");
 };
 
-// 오류처리
+export const postNoticeTotal = async (req, res) => {
+  const {
+    body: { baseCount },
+  } = req;
+  const notice = await Notice.find({});
+  const count = notice.length / baseCount;
+  if (!count) {
+    return res.sendStatus(404);
+  }
+  return res.status(301).json(count);
+};
+
+export const getPageNotice = async (req, res) => {
+  const {
+    query: { target, count },
+  } = req;
+  const notice = await Notice.find().sort({ "meta.views": "desc" });
+  const firstScope = Number(target) - 1;
+  const endScopre = Number(target) + 1;
+  let targetNotice;
+  if (target === "1") {
+    targetNotice = notice.slice(firstScope, firstScope + count);
+  } else {
+    targetNotice = notice.slice(endScopre, endScopre + count);
+  }
+  if (!targetNotice) {
+    return res.sendStatus(404);
+  }
+  return res.status(301).json({ targetNotice });
+};
