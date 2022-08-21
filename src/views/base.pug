@@ -1,18 +1,26 @@
 doctype html
 html
     head
-        title #{pageTitle} | notice
+        title #{pageTitle} | #{siteName}
         link(rel="stylesheet" href="https://unpkg.com/mvp.css")
     body
         main
+            h1=pageTitle
             nav
                 ul
                     li
                         a(href="/") home
                     li
                         a(href="/search") search
-                    li
-                        a(href="/notice/upload") Upload Notice
-            h1=pageTitle
+                    if loggedIn
+                        li
+                            a(href="/notice/upload") Upload Notice
+                        li
+                            a(href="/logout") Log out
+                    else
+                        li
+                            a(href="/login") Login
+                        li
+                            a(href="/join") Join
             block content
             include includes/footer
