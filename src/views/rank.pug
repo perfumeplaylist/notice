@@ -1,0 +1,10 @@
+extends ./base.pug
+
+block content
+    label(for="rank-select") filter
+    select(id="rank-select",name="filter")
+        option(value="like") Like
+        option(value="view") Views
+        option(value="date") latest
+    ul.notice_container
+    script(src="/static/js/rank.js") 

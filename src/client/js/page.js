@@ -1,6 +1,7 @@
 const fakeDocument = document.createDocumentFragment();
 const pageContainer = document.querySelector(".page__cotainer");
 const noticeContainer = document.querySelector(".notice_container");
+let controller;
 const baseCount = 3;
 
 let clicked = false;
@@ -34,10 +35,15 @@ async function handlePageContainerClick(e) {
   clicked = true;
   const target = e.target.innerText.slice(0, 1);
   const response = await (
-    await fetch(`/api/notice/page?target=${target}&count=${baseCount}`, {
-      method: "GET",
+    await fetch(`/api/notice/page`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ target, baseCount }),
     })
   ).json();
+  console.log(response.targetNotice);
   paintNotice(response.targetNotice);
 }
 
@@ -61,8 +67,12 @@ async function getTotalCount() {
       body: JSON.stringify({ baseCount }),
     })
   ).json();
-  const totalCount = Math.ceil(response);
-  paintCount(totalCount);
+  if (response) {
+    const totalCount = Math.ceil(response);
+    paintCount(totalCount);
+  } else {
+    return;
+  }
 }
 
 function init() {

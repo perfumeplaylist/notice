@@ -3,6 +3,7 @@ const path = require("path");
 module.exports = {
   entry: {
     page: "./src/client/js/page.js",
+    rank: "./src/client/js/rank.js",
   },
   mode: "development",
   watch: true,

@@ -27,9 +27,10 @@ export const postUpload = async (req, res) => {
   const title = req.body.title;
   const content = req.body.content;
   const { file } = req;
+  console.log(file);
   await Notice.create({
     title,
-    image: file.path,
+    image: file ? file.path : "null",
     description: content,
   });
   return res.redirect("/");
@@ -89,21 +90,52 @@ export const postNoticeTotal = async (req, res) => {
   return res.status(301).json(count);
 };
 
-export const getPageNotice = async (req, res) => {
+export const postPageNotice = async (req, res) => {
   const {
-    query: { target, count },
+    body: { target, baseCount },
   } = req;
-  const notice = await Notice.find().sort({ "meta.views": "desc" });
+  const notice = await Notice.find({}).sort({ "meta.views": "desc" });
   const firstScope = Number(target) - 1;
-  const endScopre = Number(target) + 1;
+  const endScope = Number(target) + 1;
   let targetNotice;
-  if (target === "1") {
-    targetNotice = notice.slice(firstScope, firstScope + count);
-  } else {
-    targetNotice = notice.slice(endScopre, endScopre + count);
+  switch (target) {
+    case "1":
+      targetNotice = notice.splice(firstScope, firstScope + baseCount);
+      break;
+    default:
+      targetNotice = notice.splice(endScope, endScope + baseCount);
+      break;
   }
   if (!targetNotice) {
+    targetNotice = null;
     return res.sendStatus(404);
   }
   return res.status(301).json({ targetNotice });
+};
+
+export const getRank = (req, res) => {
+  return res.render("rank", { pageTitle: "rank notice" });
+};
+
+export const postFilterNotice = async (req, res) => {
+  const {
+    body: { value },
+  } = req;
+  let notice;
+  switch (value) {
+    case "view":
+      notice = await Notice.find().sort({ "meta.views": "desc" });
+      break;
+    case "like":
+      notice = await Notice.find().sort({ "meta.like": "desc" });
+      break;
+    case "date":
+      notice = await Notice.find().sort({ createAt: "desc" });
+      break;
+  }
+  if (notice) {
+    return res.status(301).json({ notice });
+  } else {
+    return res.sendStatus(404);
+  }
 };
