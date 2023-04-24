@@ -1,10 +1,7 @@
 const fakeDocument = document.createDocumentFragment();
 const pageContainer = document.querySelector(".page__cotainer");
 const noticeContainer = document.querySelector(".notice_container");
-let controller;
 const baseCount = 3;
-
-let clicked = false;
 
 function paintNotice(notice) {
   noticeContainer.innerText = "";
@@ -31,7 +28,7 @@ function paintNotice(notice) {
   noticeContainer.appendChild(fakeDocument);
 }
 
-async function handlePageContainerClick(e) {
+async function handlePageContainer(e) {
   clicked = true;
   const target = e.target.innerText.slice(0, 1);
   const response = await (
@@ -44,6 +41,19 @@ async function handlePageContainerClick(e) {
     })
   ).json();
   console.log(response.targetNotice);
+  paintNotice(response.targetNotice);
+}
+
+async function getNotice() {
+  const response = await (
+    await fetch(`/api/notice/page`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ target: "1", baseCount }),
+    })
+  ).json();
   paintNotice(response.targetNotice);
 }
 
@@ -77,6 +87,8 @@ async function getTotalCount() {
 
 function init() {
   getTotalCount();
-  pageContainer.addEventListener("click", handlePageContainerClick);
+  getNotice();
+  pageContainer.addEventListener("click", handlePageContainer);
 }
+
 init();
